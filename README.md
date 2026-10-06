@@ -1,25 +1,28 @@
-# Freight Rate Prediction Challenge
+# Freight Rate Prediction
 
-See `Freight_Rate_ML_Assessment.pdf` for the assessment instructions.
+CatBoost models that predict freight load rates. The models are trained on loads from January to October 2025 and tested on September to October.
 
-## What to do
+## Files
 
-1. Train and validate your model using `data/train_test.csv`.
-2. Predict every load in `data/validation.csv`. Each load has a unique `load_id`.
-3. Fill the matching `predicted_rate` values in `data/validation_predictions_template.csv` and save it as `validation_predictions.csv`.
-4. Predict every row in `data/december_chart_inputs.csv` by filling its `predicted_rate` column.
-5. Install the scorer requirements and run:
+| File | Purpose |
+|---|---|
+| `train.py` | Trains the full model, prints test metrics, writes `validation_predictions.csv` |
+| `dec_eval.py` | Trains the December model (only the inputs the December file has), writes `data/december_chart_inputs.csv` |
+| `score.py` | Provided scorer: validates both outputs and creates the December chart |
+
+
+Input data files are in the project root: `train-test.csv`, `validation.csv`, `december-chart-inputs.csv`.
+
+## Run
 
 ```bash
 python -m pip install -r requirements.txt
+
+python train.py      # writes validation_predictions.csv
+python dec_eval.py   # writes data/december_chart_inputs.csv
+
 python score.py --predictions validation_predictions.csv --december-predictions data/december_chart_inputs.csv
 ```
 
-The scorer validates both files and creates `scorer_results/candidate_december.png`.
+The scorer creates `scorer_results/candidate_december.png`.
 
-## Submit
-
-- GitHub repository containing your code, dependencies, and run instructions
-- `validation_predictions.csv`
-- PDF or DOCX report containing your validation, data split approach and `candidate_december.png`
-- 2-3 minute Loom link

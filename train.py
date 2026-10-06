@@ -4,11 +4,6 @@ from catboost import CatBoostRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import numpy as np
 
-
-
-
-
-
 df=pd.read_csv("train-test.csv")
 #weight column has 300 null values, and 292 negative values
 #market index column has 374 null values
@@ -62,8 +57,7 @@ print(test.shape)
 for df in [X_train, X_test]:
     df["month"] = df["date"].dt.month
     df["day_of_week"] = df["date"].dt.dayofweek
-    df["day_of_month"] = df["date"].dt.day
-    df["week_of_year"] = df["date"].dt.isocalendar().week.astype(int)
+
 X_train = X_train.drop(columns=["date"])
 X_test = X_test.drop(columns=["date"])
 # breakpoint()
@@ -113,7 +107,7 @@ print("RMSE:", rmse)
 
 valid_df=pd.read_csv("validation.csv")
 
-x_validation = valid_df.copy()
+X_validation = valid_df.copy()
 
 
 X_validation["date"] = pd.to_datetime(X_validation["date"])
@@ -121,23 +115,17 @@ X_validation["date"] = pd.to_datetime(X_validation["date"])
 X_validation["month"] = X_validation["date"].dt.month
 X_validation["day_of_week"] = X_validation["date"].dt.dayofweek
 
-X_validation = X_validation.drop(columns=["date"])
+X_validation = X_validation.drop(columns=["date","load_id"])
 
 pred = model.predict(X_validation)
-x_validation['predicted_rate']=pred
+valid_df['predicted_rate']=pred
 
-selected = x_validation[["load_id", "predicted_rate"]]
+
+selected = valid_df[["load_id", "predicted_rate"]]
 selected.to_csv("validation_predictions.csv", index=False)
 
-##fix december csv file 
-
-december_df=pd.read_csv("december-chart-inputs.csv")
-december_df["date"] = pd.to_datetime(december_df["date"])
-
-december_df["month"] = december_df["date"].dt.month
-december_df["day_of_week"] = december_df["date"].dt.dayofweek
-
-december_df = december_df.drop(columns=["date"])
+#December predictions are made in dec_eval.py, since the December file
+#only has pickup, delivery, distance, equipment, weight and date
 
 
 
